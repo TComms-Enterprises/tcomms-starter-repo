@@ -1,0 +1,8 @@
+pytest>=8.0
+coverage>=7.5
+pre-commit>=3.7
+bandit>=1.7
+semgrep>=1.78.0
+cyclonedx-bom>=3.9.5
+pytest-cov>=4.1.0
+pytest-cov>=4.1.0
