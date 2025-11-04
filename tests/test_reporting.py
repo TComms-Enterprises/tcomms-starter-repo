@@ -1,4 +1,4 @@
-from src.tcomms_sample.reporting import Kpi, generate_summary
+from tcomms_sample.reporting import Kpi, generate_summary
 
 
 def test_generate_summary_basic():
