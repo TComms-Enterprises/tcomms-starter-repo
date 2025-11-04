@@ -1,12 +1,13 @@
-
 from dataclasses import dataclass
 from typing import List, Dict
+
 
 @dataclass
 class Kpi:
     name: str
     value: float
     target: float
+
 
 def generate_summary(kpis: List[Kpi]) -> Dict[str, float]:
     count = len(kpis)
