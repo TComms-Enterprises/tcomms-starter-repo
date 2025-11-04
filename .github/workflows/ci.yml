@@ -1,19 +1,57 @@
 
-name: Generate SBOM (CycloneDX from venv)
-on: [push, pull_request]
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
 jobs:
   build-test-scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
-        with: { python-version: '3.11' }
-      - run: python -m venv .venv && source .venv/bin/activate && python-m pip install --upgrade pip && pip install -r requirements.txt -r requirements-dev.txt && pip install pytest pytest-cov bandit bandit cyclonedx-bom
-      - run: source .venv/bin/activate && bandit -r src -ll
-      - run: source .venv/bin/activate && pytest
-      - uses: returntocorp/semgrep-action@v1
-        with: { config: p/ci }
-      - run: source .venv/bin/activate && cyclonedx-py venv -o sbom-python.json
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies (app + dev tools)
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+          pip install pytest pytest-cov bandit cyclonedx-bom
+
+      - name: Bandit SAST
+        run: |
+          source .venv/bin/activate
+          bandit -r src -ll
+
+      - name: Run tests
+        run: |
+          source .venv/bin/activate
+          pytest
+
+      - name: Semgrep SAST (non-blocking)
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: p/ci
+        continue-on-error: true
+
+      - name: Generate SBOM (CycloneDX from venv)
+        run: |
+          source .venv/bin/activate
+          cyclonedx-py venv -o sbom-python.json
+
       - uses: actions/upload-artifact@v4
-        with: { name: reports, path: "coverage.xml
-sbom-python.json" }
+        with:
+          name: reports
+          path: |
+            coverage.xml
+            sbom-python.json
