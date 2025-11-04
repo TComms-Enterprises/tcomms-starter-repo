@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.11' }
-      - run: python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt -r requirements-dev.txt pip install pytest pytest-cov bandit semgrep cyclonedx-bom
+      - run: python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt -r requirements-dev.txt pip install pytest pytest-cov bandit cyclonedx-bom
       - run: source .venv/bin/activate && bandit -r src -ll
       - run: source .venv/bin/activate && pytest
       - uses: returntocorp/semgrep-action@v1
